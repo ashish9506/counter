@@ -6,13 +6,43 @@
  */
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
+import { Button, TextField } from '@material-ui/core';
+import { useInjectReducer } from 'utils/injectReducer';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { makeSelectLoading, makeSelectValue } from './selectors';
+import reducer from './reducer';
+import { decrement, increment } from './actions';
 
-export default function HomePage() {
+function HomePage(props) {
+  console.log('xxxxxx', props);
+  const { value, dispatch } = props;
+  useInjectReducer({ key: 'counter', reducer });
   return (
-    <h1>
-      <FormattedMessage {...messages.header} />
-    </h1>
+    <div className="text-center">
+      <h1 className="text-center">Counter</h1>
+      <div>
+        <Button onClick={() => dispatch(decrement())}>-</Button>
+        <div>{value}</div>
+        <Button onClick={() => dispatch(increment())}>+</Button>
+      </div>{' '}
+    </div>
   );
 }
+
+const mapStateToProps = createStructuredSelector({
+  value: makeSelectValue(),
+  loadng: makeSelectLoading(),
+});
+
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+});
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(withConnect)(HomePage);
